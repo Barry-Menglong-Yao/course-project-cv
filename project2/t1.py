@@ -8,7 +8,28 @@ import matplotlib.pyplot as plt
  
 
 
-## match
+def main():
+    img1 = cv2.imread('./images/t1_1.png')
+    img2 = cv2.imread('./images/t1_2.png')
+    savepath = 'task1.png'
+    stitch_background(img1, img2, savepath=savepath)
+
+
+
+def stitch_background(img1, img2, savepath=''):
+    "The output image should be saved in the savepath."
+    "Do NOT modify the code provided."
+    
+    # draw_img(img1)
+    # draw_img(img2)
+
+    is_draw=False
+    stitch_two_imgs(img1, img2, is_draw,savepath,True)
+    
+    return np
+
+
+## common
  
 
 
@@ -53,35 +74,35 @@ def ratio_test(match_list):
             good_match_list.append(m)
     return good_match_list
 
-## match 
 
-def stitch_background(img1, img2, savepath=''):
-    "The output image should be saved in the savepath."
-    "Do NOT modify the code provided."
-    
-    # draw_img(img1)
-    # draw_img(img2)
+ 
 
-    is_draw=False
-    stitch_two_imgs(img1, img2, is_draw,savepath,True)
-    
-    return np
+
 
 def stitch_two_imgs(img1, img2,is_draw, savepath,is_save):
     pad_img1,keypoints1,keypoints2,match_list,h,matchesMask=compute_warp(img1,img2,is_draw)
-    result=combine(pad_img1, img2,keypoints1,keypoints2,match_list,img1,is_draw,matchesMask,h,is_save,savepath)
+    result=combine(pad_img1, img2,keypoints1,keypoints2,match_list,img1,is_draw,matchesMask,h,savepath)
     if is_save:
         cv2.imwrite(savepath,result) 
     return result
 
-def pad(img1,img2):
+
+def unpad(compared_img,pad_base_img):
+    top= top_distance(compared_img)
+    down=pad_base_img.shape[0]- top_distance(compared_img)
+    left= left_distance(compared_img)
+    right=pad_base_img.shape[1]- left_distance(compared_img)
+    return top,down,left,right
+
+
+def pad(base_img,compared_img):
     borderType = cv2.BORDER_CONSTANT
-    top = top_distance(img2)
+    top = top_distance(compared_img)
     bottom = top
-    left = left_distance(img2)
+    left = left_distance(compared_img)
     right = left
     value = [ 0, 0, 0]
-    dst = cv2.copyMakeBorder(img1, top, bottom, left, right, borderType, None, value)
+    dst = cv2.copyMakeBorder(base_img, top, bottom, left, right, borderType, None, value)
     return dst
 
 def top_distance(img):
@@ -90,7 +111,7 @@ def top_distance(img):
 def left_distance(img):
     return int(0.8 * img.shape[1])   
 
-def combine(pad_img1, img2,keypoints1,keypoints2,match_list,img1,is_draw,matchesMask,h,is_save,savepath):
+def combine(pad_img1, img2,keypoints1,keypoints2,match_list,img1,is_draw,matchesMask,h,savepath):
     
 
     warped_img = cv2.warpPerspective(img2, h, (pad_img1.shape[1]  , pad_img1.shape[0] ))
@@ -101,10 +122,10 @@ def combine(pad_img1, img2,keypoints1,keypoints2,match_list,img1,is_draw,matches
 
     # if is_draw:
     #     draw_img(warped_img)
-    top=top_distance(img2)
-    down=pad_img1.shape[0]-top_distance(img2)
-    left=left_distance(img2)
-    right=pad_img1.shape[1]-left_distance(img2)
+
+
+    top,down,left,right=unpad(img2,pad_img1)
+     
     warped_img[top:down, left:right ] = pad_img1[top:down, left:right ]
     
     if is_draw:
@@ -121,16 +142,15 @@ def compute_warp(img1,img2,is_draw):#base_img,compared_img
     keypoints1, descriptors1 = sift.detectAndCompute(pad_img1, None)
     keypoints2, descriptors2 = sift.detectAndCompute(img2, None)
 
-    # draw_keypoints(img1,keypoints1)
-    # draw_keypoints(img2,keypoints2)
+ 
 
-    # match_list= match(descriptors2 ,descriptors1 ) #TODO  remove command
+    match_list= match(descriptors2 ,descriptors1 ) #   remove comment
 
-    bf = cv2.BFMatcher()
-    matches = bf.knnMatch(descriptors2,descriptors1,k=2)
-    match_list=ratio_test(matches)
-    match_list = sorted(match_list, key = lambda x:x.distance)
-    match_list=match_list[:15]
+    # bf = cv2.BFMatcher()
+    # matches = bf.knnMatch(descriptors2,descriptors1,k=2)
+    # match_list=ratio_test(matches)
+    # match_list = sorted(match_list, key = lambda x:x.distance)
+    # match_list=match_list[:15]
 
     # if is_draw:
     #     draw_match(img2,keypoints2,pad_img1,keypoints1,match_list)
@@ -140,16 +160,7 @@ def compute_warp(img1,img2,is_draw):#base_img,compared_img
     h , mask = cv2.findHomography(source_pts, destination_pts, cv2.RANSAC,5.0)
     matchesMask = mask.ravel().tolist()
     return pad_img1,keypoints1,keypoints2,match_list,h,matchesMask
-
-def save_img_to_file(img,path):
-    with open(path,"w") as out_file:
-        m,n,_ = img.shape
-        for i in range(m):
-            for j in range(n) :
-                text = str(img[i][j])+ " "
-                print("{0:^4}".format(text ), end='', file=out_file)
-                # print("{0} ".format(), end='')
-            print(file=out_file)
+ 
 
 def draw_warp_img2_in_img1(img1,img2,keypoints1,keypoints2,match_list,matchesMask,h):
     height,w,d = img2.shape
@@ -167,9 +178,9 @@ def draw_img(img):
 
 
 def draw_inliers(img1,kp1,img2,kp2,match,matchesMask):
-    draw_params = dict(matchColor = (0,255,0), # draw matches in green color
+    draw_params = dict(matchColor = (0,255,0),  
                    singlePointColor = None,
-                   matchesMask = matchesMask, # draw only inliers
+                   matchesMask = matchesMask,  
                    flags = 2)
     img3 = cv2.drawMatches(img2,kp2,img1,kp1,match,None,**draw_params)
     # plt.imshow(img3, 'gray'),plt.show()
@@ -179,55 +190,12 @@ def draw_inliers(img1,kp1,img2,kp2,match,matchesMask):
     
  
 
-def draw_match(img1,kp1,img2,kp2,matches):
+ 
   
-    img3 = cv2.drawMatches(img1,kp1,img2,kp2,matches,None,flags=cv2.DrawMatchesFlags_NOT_DRAW_SINGLE_POINTS)
-    plt.imshow(img3),plt.show()
-  
+ 
+ 
 
-def draw_keypoints(img,keypoints):
-    img = cv2.drawKeypoints(img, keypoints, None)
-    cv2.imshow("Image", img)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
-
-
-def find_intersection(h,base_img,compared_img,pad_base_img,is_draw):
-    from shapely.geometry import Polygon
-    height,w,d = compared_img.shape
-    pts = np.float32([ [0,0],[0,height-1],[w-1,height-1],[w-1,0] ]).reshape(-1,1,2)
-    dst = cv2.perspectiveTransform(pts,h)
-
-    top= top_distance(base_img)
-    down=pad_base_img.shape[0]- top_distance(base_img)
-    left= left_distance(base_img)
-    right=pad_base_img.shape[1]- left_distance(base_img)
-    base_box = [[left, top], [left, down], [right, down], [right, top]]
-    compared_box = dst.reshape(4,-1).tolist()
-    # img1 = cv2.polylines(pad_base_img,[np.int32(dst)],True,255,3, cv2.LINE_AA)
-    # img1 = cv2.polylines(img1,[np.int32(base_box)],True,0,3, cv2.LINE_AA)
-    # if is_draw:
-    #     draw_img(img1)
-
-
-    poly_1 = Polygon(base_box)
-    poly_2 = Polygon(compared_box)
-    if(poly_2.area>1):
-        intersection=poly_1.intersection(poly_2)
-        iou =  intersection.area/ poly_1.union(poly_2).area
-
-        # img1 = cv2.polylines(pad_base_img,[np.int32(intersection.exterior.coords)],True,255,3, cv2.LINE_AA)
-        # if is_draw:
-        #     draw_img(img1)
-        return iou
-    else:
-        return 0
-
-def main():
-    img1 = cv2.imread('./images/t1_1.png')
-    img2 = cv2.imread('./images/t1_2.png')
-    savepath = 'task1.png'
-    stitch_background(img1, img2, savepath=savepath)
+## common
 
 def test():
     img1 = cv2.imread('./images/t2_2.png')
@@ -236,11 +204,6 @@ def test():
     is_draw=True
     stitch_two_imgs(img1, img2, is_draw,savepath,True)
 
-#TODO
 if __name__ == "__main__":
-    test()
-    # main()
-
-
-
-
+    # test()
+    main()

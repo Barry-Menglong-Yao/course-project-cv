@@ -1,0 +1,9 @@
+Project3/utils/__pycache__/util.cpython-38.pyc
+Project3/__pycache__/FaceCluster.cpython-38.pyc
+*.pyc
+Project3/json_helper/Json_Checker_Annotator/.DS_Store
+
+__MACOSX/*
+project2/__pycache__/.*
+project2/__pycache__/t1.cpython-38.pyc
+Project3/.vscode/*
