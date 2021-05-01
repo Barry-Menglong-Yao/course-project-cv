@@ -13,6 +13,8 @@ class Face:
     def to_json(self):
         return {"iname": self.img_name, "bbox": [float(self.x), float(self.y), float(self.w), float(self.h)]}
 
+    def to_box(self):
+        return ( self.y,self.x+self.w ,self.y+self.h,self.x)
 
 class Encoder(json.JSONEncoder):
     def default(self, obj):

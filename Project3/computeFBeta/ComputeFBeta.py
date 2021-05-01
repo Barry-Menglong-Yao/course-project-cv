@@ -15,11 +15,15 @@ def parse_args():
 
 def main():
     args = parse_args()
+    return compute_f1(args.preds,args.groundtruth,args.iou, args.beta)
 
-    with open(args.preds) as file:
+def compute_f1(preds_file,groundtruth="data/Validation folder/ground-truth.json",iou_threshold=0.5,beta=1):
+    
+
+    with open(preds_file) as file:
         preds = json.load(file)
 
-    with open(args.groundtruth) as file:
+    with open(groundtruth) as file:
         annos = json.load(file)
 
     judges = []
@@ -34,7 +38,7 @@ def main():
 
             if p_value["iname"] == iname:
                 iou = compute_iou(p_value["bbox"], bbox)
-                if iou > args.iou:
+                if iou > iou_threshold:
                     detected = True
         judges.append(detected)
     
@@ -52,7 +56,7 @@ def main():
 
     precision = ntp / len(preds)
     recall = ntp / len(judges)
-    fbeta = (1 + args.beta ** 2) * precision * recall / ((args.beta ** 2 * precision) + recall)
+    fbeta = (1 +beta ** 2) * precision * recall / (( beta ** 2 * precision) + recall)
     return fbeta
 
 
@@ -87,6 +91,6 @@ def compute_iou(bbox1, bbox2):
     iou = intersection_area / (bbox1_area+bbox2_area - intersection_area)
     return iou
 
-
-fbeta = main()
-print(fbeta)
+if __name__ == "__main__":
+    fbeta = main()
+    print(fbeta)
