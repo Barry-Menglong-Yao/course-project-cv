@@ -6,7 +6,7 @@ def face_cluster(img_dir):
     face_list,image_list=face_detect(img_dir, None, False,False)
     k=extract_k(img_dir)
     feature_list=gen_face_features(face_list,image_list)
-    label_list=k_means(feature_list,k)
+    cluster_list=k_means(feature_list,k)
 
 def gen_face_features(face_list,image_list):
     feature_list=[]
@@ -14,7 +14,7 @@ def gen_face_features(face_list,image_list):
         face=face_list[i]
         boxes=gen_boxes(face)
         feature=face_recognition.face_encodings(image_list[face.img_idx].rgb_img, boxes)
-        feature_list.append(feature)
+        feature_list.append(feature[0])
     return feature_list
 
 
