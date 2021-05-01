@@ -1,6 +1,7 @@
 from  FaceDetector import  *
 import face_recognition
 from cluster.k_means import * 
+import argparse
 
 def face_cluster(img_dir):
     face_list,image_list=face_detect(img_dir, None, False,False)
@@ -42,5 +43,16 @@ def im_crop(img,x1,y1,w,h):
     y2=y1+h
     return img[y1:y2, x1:x2, :]
 
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(description=' ')
+
+ 
+    parser.add_argument('--img_dir', type=str,default="data/faceCluster_5")
+    return parser.parse_args()
+
 if __name__ == "__main__":
-    face_cluster("data/faceCluster_5"  )
+    args = parse_args()
+    print(args)
+    face_cluster(args.img_dir  )

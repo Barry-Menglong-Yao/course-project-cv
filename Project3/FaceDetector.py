@@ -5,6 +5,7 @@ from utils.util import Face
 from utils.util import Encoder
 from computeFBeta.ComputeFBeta import *
 from utils.config import * 
+import argparse
 class Image:
     def __init__(self, rgb_img,gray_img,name):
         self.rgb_img=rgb_img
@@ -52,11 +53,21 @@ def read_image_list(dir):
         gray_img= cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         image_list.append(Image(img,gray_img,img_name)) 
     return image_list
+ 
 
 
+def parse_args():
+    parser = argparse.ArgumentParser(description=' ')
+
+ 
+    parser.add_argument('--img_dir', type=str,default="data/Validation folder/images")
+    return parser.parse_args()
 
 if __name__ == "__main__":
-    output_path="output/detect/results.json"
-    face_detect("data/Validation folder/images", output_path,True,False)
+    args = parse_args()
+    print(args)
+
+    output_path="results.json"
+    face_detect(args.img_dir , output_path,True,False)
     if NEED_VALIDATE:
         compute_f1(  output_path )
