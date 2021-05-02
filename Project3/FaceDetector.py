@@ -60,7 +60,7 @@ def parse_args():
     parser = argparse.ArgumentParser(description=' ')
 
  
-    parser.add_argument('--img_dir', type=str,default="data/Validation folder/images")
+    parser.add_argument('img_dir', type=str,default="data/Validation folder/images")
     return parser.parse_args()
 
 if __name__ == "__main__":
