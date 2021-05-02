@@ -16,7 +16,7 @@ class Image:
 def face_detect(img_dir,output_path,is_save_json,is_draw):
     face_list=[]
     image_list=read_image_list(img_dir)
-    face_cascade=cv2.CascadeClassifier("data/haarcascade_frontalface_default.xml")
+    face_cascade=cv2.CascadeClassifier("haarcascade_frontalface_default.xml")
     for idx in range(len(image_list)):
         image=image_list[idx]
         face_position_list=face_cascade.detectMultiScale(image.pixels,  minSize=(5, 5))   #
