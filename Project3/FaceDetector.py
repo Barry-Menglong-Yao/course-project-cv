@@ -1,10 +1,10 @@
 import cv2
 import os
 import json 
-from utils.util import Face
-from utils.util import Encoder
-from computeFBeta.ComputeFBeta import *
-from utils.config import * 
+from Model_Files.utils.util import Face
+from Model_Files.utils.util import Encoder
+from Model_Files.computeFBeta.ComputeFBeta import *
+from Model_Files.utils.config import * 
 import argparse
 class Image:
     def __init__(self, rgb_img,gray_img,name):
@@ -16,7 +16,7 @@ class Image:
 def face_detect(img_dir,output_path,is_save_json,is_draw):
     face_list=[]
     image_list=read_image_list(img_dir)
-    face_cascade=cv2.CascadeClassifier("haarcascade_frontalface_default.xml")
+    face_cascade=cv2.CascadeClassifier("Model_Files/haarcascade_frontalface_default.xml")
     for idx in range(len(image_list)):
         image=image_list[idx]
         face_position_list=face_cascade.detectMultiScale(image.pixels,scaleFactor=1.2, minNeighbors=5, minSize=(5, 5))   #
