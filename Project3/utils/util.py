@@ -16,6 +16,10 @@ class Face:
     def to_box(self):
         return ( self.y,self.x+self.w ,self.y+self.h,self.x)
 
+
+    def set_feature(feature):
+        self.feature = feature
+
 class Encoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, np.ndarray):

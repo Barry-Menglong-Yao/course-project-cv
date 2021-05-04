@@ -19,7 +19,7 @@ def face_detect(img_dir,output_path,is_save_json,is_draw):
     face_cascade=cv2.CascadeClassifier("haarcascade_frontalface_default.xml")
     for idx in range(len(image_list)):
         image=image_list[idx]
-        face_position_list=face_cascade.detectMultiScale(image.pixels,  minSize=(5, 5))   #
+        face_position_list=face_cascade.detectMultiScale(image.pixels,scaleFactor=1.2, minNeighbors=5, minSize=(5, 5))   #
         for face_position in face_position_list:
             x,y,w,h=face_position 
             face=Face(idx,image.name,x,y,w,h)
@@ -60,7 +60,7 @@ def parse_args():
     parser = argparse.ArgumentParser(description=' ')
 
  
-    parser.add_argument('img_dir', type=str,default="data/Validation folder/images")
+    parser.add_argument('img_dir', type=str,nargs='?',default="data/Validation folder/")
     return parser.parse_args()
 
 if __name__ == "__main__":
@@ -68,6 +68,7 @@ if __name__ == "__main__":
     print(args)
 
     output_path="results.json"
-    face_detect(args.img_dir , output_path,True,False)
+    input_dir=os.path.join(args.img_dir,'images')
+    face_detect(input_dir , output_path,True,False)
     if NEED_VALIDATE:
-        compute_f1(  output_path )
+        print(compute_f1(  output_path ))

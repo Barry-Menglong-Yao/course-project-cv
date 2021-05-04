@@ -8,6 +8,7 @@ def face_cluster(img_dir):
     k=extract_k(img_dir)
     feature_list=gen_face_features(face_list,image_list)
     cluster_list=k_means(feature_list,k)
+    gen_clusters_output(cluster_list,face_list,image_list)
 
 def gen_face_features(face_list,image_list):
     feature_list=[]
@@ -15,6 +16,7 @@ def gen_face_features(face_list,image_list):
         face=face_list[i]
         boxes=gen_boxes(face)
         feature=face_recognition.face_encodings(image_list[face.img_idx].rgb_img, boxes)
+        face.set_feature(feature[0])
         feature_list.append(feature[0])
     return feature_list
 
@@ -49,7 +51,7 @@ def parse_args():
     parser = argparse.ArgumentParser(description=' ')
 
  
-    parser.add_argument('img_dir', type=str,default="data/faceCluster_5")
+    parser.add_argument('img_dir', type=str,nargs='?',default="data/faceCluster_5")
     return parser.parse_args()
 
 if __name__ == "__main__":
