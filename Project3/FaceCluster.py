@@ -14,7 +14,9 @@ def face_cluster(img_dir):
 
 def gen_clusters_output(cluster_list,face_list,image_list):
     gen_clusters_json(cluster_list,face_list)
-    concat_multi_faces_by_cluster(cluster_list,face_list,image_list)
+    is_save_clustered_imgs=False
+    if is_save_clustered_imgs:
+        concat_multi_faces_by_cluster(cluster_list,face_list,image_list)
 
 
 def gen_clusters_json(cluster_list,face_list):

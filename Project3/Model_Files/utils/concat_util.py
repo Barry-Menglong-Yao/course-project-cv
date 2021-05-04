@@ -31,7 +31,7 @@ def concat_multi_faces_by_cluster(cluster_list,face_list,image_list):
 
 def concat_multi_faces_of_one_cluster(cluster,face_list,image_list):
     face_matrix=gen_face_matrix(cluster,face_list,image_list)
-    concat_multi_imgs(face_matrix,"output/cluster_"+str(cluster.cluster_no)+".jpg")
+    concat_multi_imgs(face_matrix,"cluster_"+str(cluster.cluster_no)+".jpg")
 
 def gen_face_matrix(cluster,face_list,image_list):
     length=len(cluster.element_id_list)
